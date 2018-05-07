@@ -26,18 +26,16 @@ contract Vote {
     // all votes
     mapping(uint => Record) public records;
 
-    uint8 constant PENDING = 0;         // ongoing vote 
+    uint8 constant PENDING = 0;         // ongoing vote
     uint8 constant AFFIRMATIVE = 1;     // support plaintiff
-    uint8 constant NEGATIVE = 2;         // support defendant/oppose 
+    uint8 constant NEGATIVE = 2;        // support defendant/oppose
 
     /**
      * start a voting around deposit dispute.
-     * NOTE: we are using tx.origin here since this contract function will be 
-     * called from other contract
      */
     function createArbitration(address defendant, string topic,
         string description, uint duration) public returns(uint) {
-        Record memory record = Record(tx.origin, defendant, topic,
+        Record memory record = Record(msg.sender, defendant, topic,
             description, now, duration, 0, 0);
         ++globalId;
         records[globalId] = record;
@@ -46,7 +44,7 @@ contract Vote {
     }
 
     /**
-     * start a normal voting 
+     * start a normal voting
      */
     function createVote(string topic, string description, uint duration)
     public returns(uint) {
@@ -88,7 +86,7 @@ contract Vote {
         if (records[id].voter[msg.sender] == 0) {
             return 0;
         }
-        
+
         return records[id].voter[msg.sender];
     }
 
@@ -107,6 +105,5 @@ contract Vote {
             return NEGATIVE;
         }
     }
-    
-}
 
+}
